@@ -1,7 +1,7 @@
 from flask import Flask
 from routes.chat import chat_bp
 from routes.users import users_bp
-from routes.requests import requests_bp
+from routes.game_requests import game_requests_bp
 from routes.replies import replies_bp
 from routes.notifications import notifications_bp
 
@@ -10,7 +10,7 @@ app.json.ensure_ascii = False
 
 app.register_blueprint(chat_bp)
 app.register_blueprint(users_bp)
-app.register_blueprint(requests_bp)
+app.register_blueprint(game_requests_bp)
 app.register_blueprint(replies_bp)
 app.register_blueprint(notifications_bp)
 

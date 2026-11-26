@@ -55,23 +55,21 @@ def get_user(user_id):
 def update_user(user_id):
     data = request.get_json(force=True)
     
-    username = data.get("username")
-    email = data.get("email")
-    password_hash = generate_password_hash(data.get("password"))
+    if "password" in data: 
+        data["password_hash"] = generate_password_hash(data.pop("password"))
     
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    cursor.execute("UPDATE users SET username = ?, email = ?, password_hash = ? WHERE id = ?", (username, email, password_hash, user_id))
+    cursor.execute(f"UPDATE users SET {', '.join(f'{key} = ?' for key in data)} WHERE id = ?", (*data.values(), user_id))
     conn.commit()
+    
+    cursor.execute("SELECT id, username, email FROM users WHERE id = ?", (user_id,))
+    user = cursor.fetchone()
     
     conn.close()
     
-    return jsonify({
-        "id": user_id,
-        "username": username,
-        "email": email
-    }), 200
+    return jsonify(dict(user)), 200
     
 @users_bp.route("/<int:user_id>", methods=["DELETE"])
 def delete_user(user_id):
