@@ -29,10 +29,12 @@ def get_notifications(user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    cursor.execute("SELECT * FROM notifications WHERE user_id = ? ORDER BY id DESC", (user_id,))
+    cursor.execute("SELECT sender_id, message, created_at FROM notifications WHERE user_id = ? ORDER BY id DESC", (user_id,))
     notifications = cursor.fetchall()
     
     cursor.execute("UPDATE notifications SET is_read = 1 WHERE user_id = ?", (user_id,))
+    conn.commit()
+    
     conn.close()
     
     return jsonify([dict(notification) for notification in notifications]), 200
